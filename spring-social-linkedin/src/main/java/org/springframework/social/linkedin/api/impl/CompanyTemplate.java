@@ -15,12 +15,16 @@
  */
 package org.springframework.social.linkedin.api.impl;
 
+import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.social.linkedin.api.Companies;
 import org.springframework.social.linkedin.api.Company;
 import org.springframework.social.linkedin.api.CompanyOperations;
+import org.springframework.social.linkedin.api.NewShare;
 import org.springframework.social.linkedin.api.Products;
 import org.springframework.web.client.RestOperations;
 
@@ -84,6 +88,23 @@ class CompanyTemplate extends AbstractTemplate implements CompanyOperations {
 		}
 	}
 	
+    public List<Company> getCompanyList() {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("format", "json");
+        params.put("is-company-admin", "true");
+        JsonNode node = restOperations.getForObject(COMPANY_LIST_URL, JsonNode.class, params);
+        try {
+            return objectMapper.reader(new TypeReference<List<Company>>() {}).readValue(node.path("values"));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public URI share(Integer companyId, NewShare share) {
+        return restOperations.postForLocation(COMPANY_SHARE_URL, share, companyId);
+    }
+	
 	public List<Company> getSuggestionsToFollow() {
 		JsonNode node = restOperations.getForObject(COMPANY_SUGGESTIONS_TO_FOLLOW, JsonNode.class);
 		try {
@@ -113,8 +134,9 @@ class CompanyTemplate extends AbstractTemplate implements CompanyOperations {
 	public static final String COMPANY_FOLLOW_URL = BASE_URL + "people/~/following/companies:" + COMPANY_FIELDS;
 	public static final String COMPANY_FOLLOW_START_STOP_URL = BASE_URL + "people/~/following/companies/id={id}";
 	public static final String COMPANY_SUGGESTIONS_TO_FOLLOW = BASE_URL + "people/~/suggestions/to-follow/companies:" + COMPANY_FIELDS;
-	
+	public static final String COMPANY_LIST_URL = BASE_URL + "companies"+"?format={format}&is-company-admin={is-company-admin}";
 	public static final String PRODUCT_FIELDS="(id,name,type,creation-timestamp,logo-url,description,features,video:(title,url),product-deal:(title,url,text),sales-persons,num-recommendations,recommendations:(recommender,id,product-id,text,reply,timestamp,likes:(timestamp,person)),product-category,website-url,disclaimer)";
 	public static final String PRODUCTS_URL = BASE_URL + "companies/{id}/products:" + PRODUCT_FIELDS +"?start={start}&count={count}";
+	public static final String COMPANY_SHARE_URL = BASE_URL + "companies/{id}/shares?format=json";
 	
 }

@@ -105,7 +105,7 @@ public class NewShare implements Serializable {
 			this.submittedUrl = submittedUrl;
 		}
 		
-		public String getSubmittedImageUrl(String submittedImageUrl) {
+		public String getSubmittedImageUrl() {
 			return this.submittedImageUrl;
 		}
 		
@@ -116,6 +116,10 @@ public class NewShare implements Serializable {
 		public String getDescription() {
 			return description;
 		}
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
 	}
 	
 	public static class NewShareVisibility implements Serializable {

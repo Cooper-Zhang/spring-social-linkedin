@@ -15,6 +15,7 @@
  */
 package org.springframework.social.linkedin.api;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -87,4 +88,17 @@ public interface CompanyOperations {
 	 */
 	Products getProducts(int companyId, int start, int count);
 
+	/**
+     * List all companies that the member is an administrator of.
+     * @return List of Companies
+     */
+	List<Company> getCompanyList();
+	
+	/**
+     * Create a company share
+     * 
+     * @param share a {@link NewShare} to share to the network
+     * @return URI to share location
+     */
+	URI share(Integer companyId, NewShare share);
 }
